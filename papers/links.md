@@ -1,0 +1,1 @@
+- [ThanosNet: A Novel Trash Classification Method Using Metadata](https://paperswithcode.com/paper/thanosnet-a-novel-trash-classification-method)
