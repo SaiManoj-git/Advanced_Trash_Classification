@@ -8,9 +8,9 @@ import argparse
 import os
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--train_data_dir', default='../data/300X300_trashnetdata/train', help="Directory with the train data")
-parser.add_argument('--dev_data_dir', default='../data/300X300_trashnetdata/dev', help="Directory with the train data")
-parser.add_argument('--test_data_dir', default='../data/300X300_trashnetdata/test', help="Directory with the train data")
+parser.add_argument('--train_data_dir', default='/content/TDL_Project_Trash_Classification/code/data/300X300_trashnetdata/train', help="Directory with the train data")
+parser.add_argument('--dev_data_dir', default='/content/TDL_Project_Trash_Classification/code/data/300X300_trashnetdata/dev', help="Directory with the train data")
+parser.add_argument('--test_data_dir', default='/content/TDL_Project_Trash_Classification/code/data/300X300_trashnetdata/test', help="Directory with the train data")
 
 args = parser.parse_args()
 
