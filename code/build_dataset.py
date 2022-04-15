@@ -41,6 +41,10 @@ parser.add_argument('--output_dir', default='/content/TDL_Project_Trash_Classifi
 
 def resize_and_save(filename, output_dir, class_dir, size=SIZE):
     """Resize the image contained in `filename` and save it to the `output_dir`"""
+    
+    if(filename=="/content/TDL_Project_Trash_Classification/code/data/trashnetdata/cardboard/.DS_Store")
+        return
+
     image = Image.open(args.data_dir+"/"+class_dir+"/"+filename)
     # Use bilinear interpolation instead of the default "nearest neighbor" method
     image = image.resize((size, size), Image.BILINEAR)
