@@ -24,17 +24,24 @@ import os
 from PIL import Image
 from tqdm import tqdm
 
+import matplotlib.pyplot as plt
+import tensorflow as tf
+import numpy as np
+import os
 
-SIZE = 64
+
+SIZE = 300
+
+train_dev_test_split_size = [70,13,17]
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--data_dir', default='data/SIGNS', help="Directory with the SIGNS dataset")
-parser.add_argument('--output_dir', default='data/64x64_SIGNS', help="Where to write the new data")
+parser.add_argument('--data_dir', default='data/trashnetdata', help="Directory with the SIGNS dataset")
+parser.add_argument('--output_dir', default='data/300x300_trashnetdata', help="Where to write the new data")
 
 
-def resize_and_save(filename, output_dir, size=SIZE):
+def resize_and_save(filename, output_dir, class_dir, size=SIZE):
     """Resize the image contained in `filename` and save it to the `output_dir`"""
-    image = Image.open(filename)
+    image = Image.open(args.data_dir+"/"+class_dir+"/"+filename)
     # Use bilinear interpolation instead of the default "nearest neighbor" method
     image = image.resize((size, size), Image.BILINEAR)
     image.save(os.path.join(output_dir, filename.split('/')[-1]))
@@ -46,45 +53,78 @@ if __name__ == '__main__':
     assert os.path.isdir(args.data_dir), "Couldn't find the dataset at {}".format(args.data_dir)
 
     # Define the data directories
-    train_data_dir = os.path.join(args.data_dir, 'train_signs')
-    test_data_dir = os.path.join(args.data_dir, 'test_signs')
+    cardboard_dir = os.path.join(args.data_dir,"cardboard")
+    glass_dir = os.path.join(args.data_dir,"glass")
+    metal_dir = os.path.join(args.data_dir,"metal")
+    paper_dir = os.path.join(args.data_dir,"paper")
+    plastic_dir = os.path.join(args.data_dir,"plastic")
+    trash_dir = os.path.join(args.data_dir,"trash")
 
-    # Get the filenames in each directory (train and test)
-    filenames = os.listdir(train_data_dir)
-    filenames = [os.path.join(train_data_dir, f) for f in filenames if f.endswith('.jpg')]
 
-    test_filenames = os.listdir(test_data_dir)
-    test_filenames = [os.path.join(test_data_dir, f) for f in test_filenames if f.endswith('.jpg')]
+    # Get the filenames in each directory
+    cardboardfilenames = os.listdir(cardboard_dir)
+    glassfilenames = os.listdir(glass_dir)
+    metalfilenames = os.listdir(metal_dir)
+    paperfilenames = os.listdir(paper_dir)
+    plasticfilenames = os.listdir(plastic_dir)
+    trashfilenames = os.listdir(trash_dir)
 
-    # Split the images in 'train_signs' into 80% train and 20% dev
+    df = {"cardboard": cardboardfilenames, "glass": glassfilenames,"metal": metalfilenames,"paper": paperfilenames,"plastic": plasticfilenames, "trash": trashfilenames}
+
+    # Split the images in 'train_signs' into 70/13/17 split
     # Make sure to always shuffle with a fixed seed so that the split is reproducible
+    
+    train_df={}
+    dev_df={}
+    test_df={}
+
+    dev_test_df={}
+
     random.seed(230)
-    filenames.sort()
-    random.shuffle(filenames)
+    # print(df)
+    for key in df:
+        random.shuffle(df[key])
+            # 70/30
+        split = int(train_dev_test_split_size[0]/100 * len(df[key]))
+        print(key,"train-test-split:",split," df-len",len(df[key]),"\n")
+        train_df[key] = df[key][:split]
+        dev_test_df[key] = df[key][split:]
 
-    split = int(0.8 * len(filenames))
-    train_filenames = filenames[:split]
-    dev_filenames = filenames[split:]
+        # in 30: 43/67
+        dev_test_split_size = train_dev_test_split_size[1]*100/(100-train_dev_test_split_size[0])
+        dev_test_split = int(dev_test_split_size/100*len(dev_test_df[key])) 
+        dev_df[key] = dev_test_df[key][:dev_test_split]
+        test_df[key] = dev_test_df[key][dev_test_split:]
 
-    filenames = {'train': train_filenames,
-                 'dev': dev_filenames,
-                 'test': test_filenames}
 
+
+
+    
+    filedirs = {'train': train_df,
+                 'dev': dev_df,
+                 'test': test_df}    
+
+    
+    # create output_dir
     if not os.path.exists(args.output_dir):
         os.mkdir(args.output_dir)
-    else:
-        print("Warning: output dir {} already exists".format(args.output_dir))
-
-    # Preprocess train, dev and test
-    for split in ['train', 'dev', 'test']:
-        output_dir_split = os.path.join(args.output_dir, '{}_signs'.format(split))
+    
+     # Preprocess train, dev and test
+    for split in filedirs:
+        output_dir_split = os.path.join(args.output_dir, '{}'.format(split))
         if not os.path.exists(output_dir_split):
             os.mkdir(output_dir_split)
         else:
-            print("Warning: dir {} already exists".format(output_dir_split))
+            print("Warning: output dir {} already exists".format(output_dir_split))
+        
+        for skey,sdir in filedirs[split].items():
+            # print(skey," ",sdir)
+            skey_dir_under_split = os.path.join(output_dir_split, '{}'.format(skey))
+            if not os.path.exists(skey_dir_under_split):
+                os.mkdir(skey_dir_under_split)
 
-        print("Processing {} data, saving preprocessed data to {}".format(split, output_dir_split))
-        for filename in tqdm(filenames[split]):
-            resize_and_save(filename, output_dir_split, size=SIZE)
+            for file in sdir:
+                resize_and_save(file, skey_dir_under_split, skey, size=SIZE)
+
 
     print("Done building dataset")
