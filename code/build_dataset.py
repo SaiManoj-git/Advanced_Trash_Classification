@@ -35,8 +35,8 @@ SIZE = 300
 train_dev_test_split_size = [70,13,17]
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--data_dir', default='data/trashnetdata', help="Directory with the SIGNS dataset")
-parser.add_argument('--output_dir', default='data/300x300_trashnetdata', help="Where to write the new data")
+parser.add_argument('--data_dir', default='/content/TDL_Project_Trash_Classification/code/data/trashnetdata', help="Directory with the SIGNS dataset")
+parser.add_argument('--output_dir', default='/content/TDL_Project_Trash_Classification/code/data/300X300_trashnetdata', help="Where to write the new data")
 
 
 def resize_and_save(filename, output_dir, class_dir, size=SIZE):
