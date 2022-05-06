@@ -9,4 +9,5 @@ https://github.com/garythung/trashnet
 https://github.com/AgaMiko/waste-datasets-review
 
 ### Implementation(notebook):
-  - colab: [link](https://colab.research.google.com/drive/13byYkqjbgNacsWiYQ3qpxcSqDh1XWlkx?usp=sharing)
+  - testing_work: [link](https://colab.research.google.com/drive/13byYkqjbgNacsWiYQ3qpxcSqDh1XWlkx?usp=sharing)
+  - final-work: [link](https://colab.research.google.com/drive/1bkTnyyag8KeFDkNNxXNWf7yR6g5THbRR?usp=sharing)
